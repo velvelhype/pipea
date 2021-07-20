@@ -24,14 +24,17 @@ void do_child()
 
 void do_parent()
 {
+    // char outf[] = "outf";
     close(pipe_fd[1]);
     dup2(pipe_fd[0], 0);
     close(pipe_fd[0]);
 
-    int fileout_fd;
-    fileout_fd =  open("outfile", O_CREAT|O_RDWR|O_TRUNC, 0644);
-    dup2(fileout_fd, 1);
-    close(fileout_fd);
+    // int fileout_fd;
+    // fileout_fd =  open("bin", O_CREAT|O_RDWR|O_TRUNC, 0644);
+    // if(fileout_fd < 0)
+    //     printf("for erro ");
+    // dup2(fileout_fd, 1);
+    // close(fileout_fd);
 
     char *argv[] = {"/usr/bin/wc", "-w", NULL};
     char **environ;
@@ -42,8 +45,6 @@ void do_parent()
 int main(int argc, char *argv[])
 {
     pipe(pipe_fd);
-
-    printf("infile is %s\n", argv[1]);
 
     int fd;
     fd = open(argv[1], O_RDONLY);
@@ -56,5 +57,13 @@ int main(int argc, char *argv[])
     if (pid == 0)
         do_child();
     else
-        do_parent();
+    {
+    int fileout_fd;
+    fileout_fd =  open(argv[4], O_CREAT|O_RDWR|O_TRUNC, 0644);
+    if(fileout_fd < 0)
+        printf("for erro ");
+    dup2(fileout_fd, 1);
+    close(fileout_fd);
+    do_parent();
+    }
 }
