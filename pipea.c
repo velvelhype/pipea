@@ -38,12 +38,15 @@ void do_parent()
     execve(argv[0], argv, environ);
 }
 
-int main()
+//./pipex infile "grep a1" "wc -w" outfile
+int main(int argc, char *argv[])
 {
     pipe(pipe_fd);
 
+    printf("infile is %s\n", argv[1]);
+
     int fd;
-    fd = open("infile", O_RDONLY);
+    fd = open(argv[1], O_RDONLY);
     close(0);
     dup2(fd, 0);
     close(fd);
