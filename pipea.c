@@ -9,6 +9,7 @@
 // < infile grep a1 | wc -w > outfile
 // ./pipex infile "ls -l" "wc -l" outfile
 // < infile ls -l | wc -l > outfile
+//
 
 int pipe_fd[2];
 
@@ -76,26 +77,36 @@ void do_parent(char *arg[])
 int main(int argc, char *argv[])
 {
     pipe(pipe_fd);
+    if(pipe(pipe_fd) == -1)
+        ft_exit("pipe failed\n");
 
     if(argc != 5)
-        exit(1);
+        ft_exit("too much argument\n");
     
     int filein_fd;
     filein_fd = open(argv[1], O_RDONLY);
+    if(filein_fd == -1)
+        ft_exit("can't open file\n");
     close(0);
-    dup2(filein_fd, 0);
+    if(dup2(filein_fd, 0) == -1)
+        ft_exit("dup failed\n");
     close(filein_fd);
 
     int fileout_fd;
     fileout_fd = open(argv[4], O_CREAT|O_RDWR|O_TRUNC, 0644);
+    if(fileout_fd == -1)
+        ft_exit("can't open file\n");
     close(1);
-    dup2(fileout_fd, 1);
+    if(dup2(fileout_fd, 1) == -1)
+        ft_exit("dup failed\n");
     close(fileout_fd);
 
     int pid = fork();
 
     if (pid == 0)
         do_child(argv);
+    else if (pid == -1)
+        ft_exit("fork failed\n");
     else
         do_parent(argv);
         
